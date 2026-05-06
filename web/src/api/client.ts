@@ -40,6 +40,7 @@ import type {
   AdminLabelInput,
   LabelDefinition,
   LabelItem,
+  BatchMemberResponse,
 } from './types'
 import { ApiError } from '@/shared/lib/api-error'
 import i18n from '@/i18n/config'
@@ -702,6 +703,16 @@ export const namespaceApi = {
     })
   },
 
+  async batchAddMembers(slug: string, members: Array<{ userId: string; role: string }>): Promise<BatchMemberResponse> {
+    return fetchJson<BatchMemberResponse>(`${WEB_API_PREFIX}/namespaces/${normalizeNamespaceSlug(slug)}/members/batch`, {
+      method: 'POST',
+      headers: await ensureCsrfHeaders({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({ members }),
+    })
+  },
+
   async updateMemberRole(slug: string, userId: string, role: string): Promise<NamespaceMember> {
     return fetchJson<NamespaceMember>(
       `${WEB_API_PREFIX}/namespaces/${normalizeNamespaceSlug(slug)}/members/${encodeURIComponent(userId)}/role`,
@@ -1005,6 +1016,30 @@ export const meApi = {
 
       hasMore = (page + 1) * response.size < response.total && response.items.length > 0
       page += 1
+    }
+
+    return items
+  },
+
+  async getSubscriptionsPage(params?: { page?: number; size?: number }): Promise<{ items: SkillSummary[]; total: number; page: number; size: number }> {
+    const searchParams = new URLSearchParams()
+    searchParams.set('page', String(params?.page ?? 0))
+    searchParams.set('size', String(params?.size ?? 12))
+    return fetchJson<{ items: SkillSummary[]; total: number; page: number; size: number }>(`${WEB_API_PREFIX}/me/subscriptions?${searchParams.toString()}`)
+  },
+
+  async getSubscriptions(): Promise<SkillSummary[]> {
+    const items: SkillSummary[] = []
+    let page = 0
+    const size = 100
+    let hasMore = true
+
+    while (hasMore) {
+      const response = await meApi.getSubscriptionsPage({ page, size })
+      items.push(...response.items)
+
+      hasMore = (page + 1) * response.size < response.total && response.items.length > 0
+      page++
     }
 
     return items

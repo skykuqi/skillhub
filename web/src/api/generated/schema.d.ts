@@ -468,6 +468,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/skills/{namespace}/{slug}/submit-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submitForReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/web/skills/{namespace}/{slug}/submit-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["submitForReview_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/skills/{namespace}/{slug}/reports": {
         parameters: {
             query?: never;
@@ -494,6 +526,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["submitReport_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/web/skills/{namespace}/{slug}/confirm-publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["confirmPublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/skills/{namespace}/{slug}/confirm-publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["confirmPublish_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -846,6 +910,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["restoreNamespace_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/namespaces/{slug}/members/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["batchAddMembers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/web/namespaces/{slug}/members/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["batchAddMembers_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3239,6 +3335,10 @@ export interface components {
             targetVersion: string;
             confirmWarnings?: boolean;
         };
+        SubmitReviewRequest: {
+            version: string;
+            targetVisibility: string;
+        };
         SkillReportSubmitRequest: {
             reason?: string;
             details?: string;
@@ -3256,6 +3356,9 @@ export interface components {
             /** Format: int64 */
             reportId?: number;
             status?: string;
+        };
+        ConfirmPublishRequest: {
+            version: string;
         };
         AdminSkillActionRequest: {
             reason?: string;
@@ -3358,10 +3461,37 @@ export interface components {
             /** Format: int64 */
             targetNamespaceId?: number;
         };
+        BatchMemberRequest: {
+            members: components["schemas"]["MemberRequest"][];
+        };
         MemberRequest: {
             userId: string;
             /** @enum {string} */
             role: "OWNER" | "ADMIN" | "MEMBER";
+        };
+        ApiResponseBatchMemberResponse: {
+            /** Format: int32 */
+            code?: number;
+            msg?: string;
+            data?: components["schemas"]["BatchMemberResponse"];
+            /** Format: date-time */
+            timestamp?: string;
+            requestId?: string;
+        };
+        BatchMemberResponse: {
+            /** Format: int32 */
+            totalCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+            /** Format: int32 */
+            failureCount?: number;
+            results?: components["schemas"]["BatchMemberResult"][];
+        };
+        BatchMemberResult: {
+            userId?: string;
+            role?: string;
+            success?: boolean;
+            error?: string;
         };
         NamespaceLifecycleRequest: {
             reason?: string;
@@ -5569,6 +5699,60 @@ export interface operations {
             };
         };
     };
+    submitForReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                namespace: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSkillLifecycleMutationResponse"];
+                };
+            };
+        };
+    };
+    submitForReview_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                namespace: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSkillLifecycleMutationResponse"];
+                };
+            };
+        };
+    };
     submitReport: {
         parameters: {
             query?: never;
@@ -5619,6 +5803,60 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseSkillReportMutationResponse"];
+                };
+            };
+        };
+    };
+    confirmPublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                namespace: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPublishRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSkillLifecycleMutationResponse"];
+                };
+            };
+        };
+    };
+    confirmPublish_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                namespace: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPublishRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSkillLifecycleMutationResponse"];
                 };
             };
         };
@@ -6273,6 +6511,58 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseNamespaceResponse"];
+                };
+            };
+        };
+    };
+    batchAddMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBatchMemberResponse"];
+                };
+            };
+        };
+    };
+    batchAddMembers_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseBatchMemberResponse"];
                 };
             };
         };
